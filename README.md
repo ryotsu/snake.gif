@@ -1,4 +1,8 @@
-# Snake
+# Snake.GIF
+
+Interactive snake game as a GIF
+
+## Usage
 
 To start your Phoenix server:
 
@@ -7,3 +11,8 @@ To start your Phoenix server:
   * Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+Use arrow keys to control the snake.
+
+---
+Inspired by [gifstream](https://github.com/def-/gifstream).
