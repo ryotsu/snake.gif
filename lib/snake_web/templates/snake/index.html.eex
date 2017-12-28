@@ -1,0 +1,9 @@
+<div class="container">
+  <div class="box">
+    <img id="snake" src="<%= snake_path(@conn, :gif) %>" />
+  </div>
+
+  <div class="box">
+    <button id="startButton" class="pure-button pure-button-primary"> Start Game </button>
+  </div>
+</div>
