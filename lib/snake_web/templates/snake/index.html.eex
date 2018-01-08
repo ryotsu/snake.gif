@@ -1,4 +1,4 @@
-<div class="container">
+<div class="centered">
   <div class="box">
     <img id="snake" src="<%= snake_path(@conn, :gif) %>" />
   </div>

@@ -10,6 +10,7 @@ let socket = new Socket("/socket", {
   logger: (kind, msg, data) => {console.log(`${kind}: ${msg}`, data)}
 })
 
+
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
 // which authenticates the session and assigns a `:current_user`.
@@ -55,7 +56,5 @@ let socket = new Socket("/socket", {
 // from connect if you don't care about authentication.
 
 socket.connect()
-
-// Now that you are connected, you can join channels with a topic:
 
 export default socket

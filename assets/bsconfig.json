@@ -1,0 +1,16 @@
+{
+  "name": "snake",
+  "sources": [
+    "re"
+  ],
+  "bs-dependencies": [
+    "@glennsl/bs-json",
+    "bucklescript-phx"
+  ],
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": false
+  },
+  "bsc-flags": ["-bs-super-errors"],
+  "refmt": 3
+}
