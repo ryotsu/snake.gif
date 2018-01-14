@@ -13,6 +13,7 @@ defmodule Snake.Handler do
   @doc """
   Stars the GenServer
   """
+  @spec start_link :: {:ok, pid}
   def start_link do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
@@ -20,6 +21,7 @@ defmodule Snake.Handler do
   @doc """
   Starts the snake game for the user and starts sending frames to clients
   """
+  @spec start_game(String.t()) :: :ok
   def start_game(player_id) do
     GenServer.call(__MODULE__, {:start, player_id})
   end
@@ -27,6 +29,7 @@ defmodule Snake.Handler do
   @doc """
   Subscribe to the GenServer for receiving the gif image
   """
+  @spec subscribe :: binary
   def subscribe do
     GenServer.call(__MODULE__, :subscribe)
   end
@@ -34,6 +37,7 @@ defmodule Snake.Handler do
   @doc """
   Turns the snake in the given direction for the player
   """
+  @spec turn(String.t(), :up | :down | :left | :right) :: :ok
   def turn(player_id, direction) do
     GenServer.cast(__MODULE__, {:turn, player_id, direction})
   end
@@ -52,14 +56,15 @@ defmodule Snake.Handler do
     EventHandler.set_status(:stopped)
     Process.send_after(self(), :next_frame, 100)
 
-    {:ok, %{
-      base: base,
-      frame: frame,
-      clients: [],
-      buffer: buffer,
-      status: :initialized,
-      player_id: nil
-    }}
+    {:ok,
+     %{
+       base: base,
+       frame: frame,
+       clients: [],
+       buffer: buffer,
+       status: :initialized,
+       player_id: nil
+     }}
   end
 
   @doc """
@@ -105,7 +110,7 @@ defmodule Snake.Handler do
   Gets the next frame of the gif image from the nif and sends it to all the clients.
   """
   def handle_info(:next_frame, %{status: :started, clients: clients} = state) do
-    {frame, status} = get_next_frame(state.buffer, state.frame)
+    {status, frame} = get_next_frame(state.buffer, state.frame)
     set_timer_and_send(clients, frame)
     {:noreply, %{state | frame: frame, status: status}}
   end
@@ -123,33 +128,39 @@ defmodule Snake.Handler do
     {:noreply, %{state | clients: clients}}
   end
 
+  @spec get_next_frame(reference, binary) :: {:started, binary} | {:stopped, binary}
   defp get_next_frame(buffer, frame) do
     case GIF.next_frame(buffer) do
       {:ok, image_data} ->
         new_frame = make_frame(image_data)
-        {new_frame, :started}
+        {:started, new_frame}
 
       {:error, _err} ->
         EventHandler.set_status(:stopped)
-        {frame, :stopped}
+        {:stopped, frame}
     end
   end
 
+  @spec new_game :: {reference, binary}
   defp new_game do
     {:ok, buffer, image_data} = GIF.new_game()
     frame = make_frame(image_data)
     {buffer, frame}
   end
 
+  @spec make_frame(binary) :: binary
   defp make_frame(image_data) do
     GIF.graphic_control_ext(1, 10) <> GIF.image_descriptor(128, 128) <> image_data
   end
 
+  @spec set_timer_and_send([pid], binary) :: :ok
   defp set_timer_and_send(clients, frame) do
     Process.send_after(self(), :next_frame, 100)
 
     for client <- clients do
       send(client, {:image, frame})
     end
+
+    :ok
   end
 end

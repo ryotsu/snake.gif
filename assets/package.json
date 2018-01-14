@@ -4,7 +4,7 @@
   "description": "Snake game as a gif",
   "license": "AGPL-3.0",
   "scripts": {
-    "start": "webpack --watch --colors --stdin --progress",
+    "start": "webpack --watch --colors --stdin",
     "deploy": "webpack -p"
   },
   "devDependencies": {

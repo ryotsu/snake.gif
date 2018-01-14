@@ -9,6 +9,7 @@ defmodule Snake.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:rustler, :phoenix, :gettext] ++ Mix.compilers(),
       rustler_crates: rustler_crates(),
+      dialyzer: [plt_add_deps: :transitive],
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

@@ -5,12 +5,19 @@ defmodule Snake.Encoder.GIF do
 
   use Rustler, otp_app: :snake, crate: :snake_gif
 
+  @dialyzer {:nowarn_function, __init__: 0}
+
+  @spec new_game() :: {:ok, reference, binary}
   def new_game(), do: err()
+
+  @spec next_frame(reference) :: {:ok, binary} | {:error, binary}
   def next_frame(_buffer), do: err()
+
+  @spec turn(reference, :up | :down | :left | :right) :: :ok
   def turn(_buffer, _direction), do: err()
 
   defp err do
-    throw(NifNotLoadedError)
+    :erlang.nif_error(:nif_not_loaded)
   end
 
   @spec screen_descriptor(integer, integer, integer) :: binary
@@ -123,8 +130,4 @@ defmodule Snake.Encoder.GIF do
       0
     >>
   end
-end
-
-defmodule NifNotLoadedError do
-  defexception message: "nif not loaded"
 end
