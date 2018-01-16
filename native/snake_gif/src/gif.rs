@@ -5,7 +5,7 @@ pub fn lzw_encode(image_data: &[u8], code_size: u8) -> Vec<u8> {
     let mut compressed = vec![];
     {
         let mut enc = Encoder::new(LsbWriter::new(&mut compressed), code_size).unwrap();
-        enc.encode_bytes(&image_data).unwrap();
+        enc.encode_bytes(image_data).unwrap();
     }
 
     compressed = chunkify(compressed);

@@ -1,4 +1,4 @@
-use std::collections::{VecDeque, HashSet};
+use std::collections::{HashSet, VecDeque};
 use rand::{thread_rng, Rng};
 use super::gif::lzw_encode;
 
@@ -87,7 +87,7 @@ impl Board {
             return Err("Game Over");
         }
 
-        let mouth_idx = mouth.0 as u16 * 32 + mouth.1 as u16;
+        let mouth_idx = u16::from(mouth.0) * 32 + u16::from(mouth.1);
         if self.snake_set.contains(&mouth_idx) {
             return Err("Game Over");
         }
@@ -98,7 +98,8 @@ impl Board {
         if mouth != self.food {
             let tail = self.snake.pop_back().unwrap();
             Self::paint_pixel(&mut self.field, &tail, 0);
-            true == self.snake_set.remove(&(tail.0 as u16 * 32 + tail.1 as u16));
+            self.snake_set
+                .remove(&(u16::from(tail.0) * 32 + u16::from(tail.1)));
         } else {
             self.food = Self::food_location(&self.snake_set);
         }
@@ -107,7 +108,7 @@ impl Board {
     }
 
     fn paint(&mut self) {
-        for pixel in self.snake.iter() {
+        for pixel in &self.snake {
             Self::paint_pixel(&mut self.field, pixel, 1);
         }
 
