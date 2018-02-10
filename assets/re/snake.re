@@ -9,6 +9,17 @@ external remove_event_listener :
   (Dom.element, string, ReactEventRe.Keyboard.t => unit) => unit =
   "removeEventListener";
 
+let gen_string = length => {
+  let gen = () =>
+    switch (Random.int(26 + 26 + 10)) {
+    | n when n < 26 => int_of_char('a') + n
+    | n when n < 26 + 26 => int_of_char('A') + n - 26
+    | n => int_of_char('0') + n - 26 - 26
+    };
+  let gen = (_) => String.make(1, char_of_int(gen()));
+  String.concat("", Array.to_list(Array.init(length, gen)));
+};
+
 let handle_keys = (channel, keycode) => {
   let direction =
     switch keycode {
@@ -102,7 +113,7 @@ let make = _children => {
     ),
     Sub(
       () => {
-        let user_id = "somerandomid";
+        let user_id = gen_string(16);
         let socket = Socket.connect(user_id);
         let change_status = status => self.send(NewStatus(status));
         let channel = join_channel(socket, change_status);
