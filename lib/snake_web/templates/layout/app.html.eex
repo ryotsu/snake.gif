@@ -12,10 +12,9 @@
   </head>
 
   <body>
-    <div class="container">
+    <div class="container" id="root">
       <%= render @view_module, @view_template, assigns %>
     </div>
-    <script>window.user_id = "<%= assigns[:user_id] %>"</script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

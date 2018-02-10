@@ -5,12 +5,14 @@
   ],
   "bs-dependencies": [
     "@glennsl/bs-json",
-    "bucklescript-phx"
+    "bucklescript-phx",
+    "reason-react"
   ],
   "package-specs": {
     "module": "commonjs",
     "in-source": false
   },
   "bsc-flags": ["-bs-super-errors"],
+  "reason": {"react-jsx" : 2},
   "refmt": 3
 }

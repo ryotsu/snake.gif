@@ -4,11 +4,7 @@ defmodule SnakeWeb.SnakeController do
   alias Snake.Handler
 
   def index(conn, _params) do
-    user_id = :crypto.strong_rand_bytes(16) |> Base.encode64()
-
-    conn
-    |> assign(:user_id, user_id)
-    |> render("index.html")
+    render(conn, "index.html")
   end
 
   def gif(conn, _params) do
