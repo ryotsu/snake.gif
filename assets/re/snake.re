@@ -1,14 +1,3 @@
-[@bs.val] external document : Dom.element = "document";
-
-[@bs.send]
-external add_event_listener :
-  (Dom.element, string, ReactEventRe.Keyboard.t => unit) => unit =
-  "addEventListener";
-
-external remove_event_listener :
-  (Dom.element, string, ReactEventRe.Keyboard.t => unit) => unit =
-  "removeEventListener";
-
 let gen_string = length => {
   let gen = () =>
     switch (Random.int(26 + 26 + 10)) {
@@ -102,16 +91,6 @@ let make = _children => {
     },
   subscriptions: self => [
     Sub(
-      () =>
-        add_event_listener(document, "keydown", event =>
-          self.send(KeyDown(ReactEventRe.Keyboard.which(event)))
-        ),
-      () =>
-        remove_event_listener(document, "keydown", event =>
-          self.send(KeyDown(ReactEventRe.Keyboard.which(event)))
-        )
-    ),
-    Sub(
       () => {
         let user_id = gen_string(16);
         let socket = Socket.connect(user_id);
@@ -137,6 +116,8 @@ let make = _children => {
             "pure-button pure-button-primary"
             ++ (status == Running ? " pure-button-disabled" : "")
           )
+          autoFocus=Js.true_
+          onKeyDown=(evt => send(KeyDown(ReactEventRe.Keyboard.which(evt))))
           onClick=(_evt => send(Start))>
           (str("Start Game"))
         </button>
