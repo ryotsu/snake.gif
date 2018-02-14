@@ -1,3 +1,12 @@
+open Antd;
+
+let str = ReasonReact.stringToElement;
+
+let unwrap =
+  fun
+  | Some(v) => v
+  | None => raise(Invalid_argument("Passed `None` to unwrap"));
+
 let gen_string = length => {
   let gen = () =>
     switch (Random.int(26 + 26 + 10)) {
@@ -46,13 +55,6 @@ let join_channel = (socket, change_status) => {
   channel;
 };
 
-let str = ReasonReact.stringToElement;
-
-let unwrap =
-  fun
-  | Some(v) => v
-  | None => raise(Invalid_argument("Passed `None` to unwrap"));
-
 type action =
   | KeyDown(int)
   | Start
@@ -65,6 +67,7 @@ type status =
 
 type state = {
   status,
+  flag: string,
   channel: option(Phx.Channel.t)
 };
 
@@ -72,7 +75,7 @@ let component = ReasonReact.reducerComponent("Snake");
 
 let make = _children => {
   ...component,
-  initialState: () => {status: Running, channel: None},
+  initialState: () => {status: Running, channel: None, flag: gen_string(5)},
   reducer: (action, {channel} as state) =>
     switch action {
     | KeyDown(key) =>
@@ -106,21 +109,23 @@ let make = _children => {
       }
     )
   ],
-  render: ({state: {status}, send}) =>
+  render: ({state: {status, flag}, send}) =>
     <div className="centered">
-      <div className="box"> <img id="snake" src="/snake.gif" /> </div>
       <div className="box">
-        <button
-          id="startButton"
-          className=(
-            "pure-button pure-button-primary"
-            ++ (status == Running ? " pure-button-disabled" : "")
-          )
+        <img id="snake" src=("/snake.gif?" ++ flag) />
+      </div>
+      <div className="box">
+        <div
           autoFocus=Js.true_
-          onKeyDown=(evt => send(KeyDown(ReactEventRe.Keyboard.which(evt))))
-          onClick=(_evt => send(Start))>
-          (str("Start Game"))
-        </button>
+          onKeyDown=(evt => send(KeyDown(ReactEventRe.Keyboard.which(evt))))>
+          <Button
+            type_="primary"
+            size="large"
+            loading=(status == Running |> Js.Boolean.to_js_boolean)
+            onClick=(_evt => send(Start))>
+            (str("Start Game"))
+          </Button>
+        </div>
       </div>
     </div>
 };

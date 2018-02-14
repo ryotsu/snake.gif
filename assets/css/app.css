@@ -1,7 +1,5 @@
 /* This file is for your main application css. */
 
-@import 'buttons.css';
-
 html, body {
   height: 90%;
   font-family: sans-serif;
