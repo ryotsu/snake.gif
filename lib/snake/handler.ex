@@ -60,7 +60,7 @@ defmodule Snake.Handler do
      %{
        base: base,
        frame: frame,
-       clients: [],
+       clients: %{},
        buffer: buffer,
        status: :initialized,
        player_id: nil
@@ -89,8 +89,8 @@ defmodule Snake.Handler do
   Subscribes the caller by adding its pid to the list of clients and monitoring it
   """
   def handle_call(:subscribe, {pid, _tag}, %{clients: clients} = state) do
-    clients = [pid | clients]
-    Process.monitor(pid)
+    ref = Process.monitor(pid)
+    clients = Map.put(clients, pid, ref)
     {:reply, state.base <> state.frame, %{state | clients: clients}}
   end
 
@@ -123,8 +123,9 @@ defmodule Snake.Handler do
   @doc """
   Unsubscribes the client when the client process dies
   """
-  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    clients = List.delete(state.clients, pid)
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, %{clients: clients} = state) do
+    {ref, clients} = Map.pop(clients, pid)
+    Process.demonitor(ref)
     {:noreply, %{state | clients: clients}}
   end
 
@@ -157,7 +158,7 @@ defmodule Snake.Handler do
   defp set_timer_and_send(clients, frame) do
     Process.send_after(self(), :next_frame, 100)
 
-    for client <- clients do
+    for client <- Map.keys(clients) do
       send(client, {:image, frame})
     end
 

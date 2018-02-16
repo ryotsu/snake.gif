@@ -18,27 +18,28 @@ defmodule Snake.EventHandler do
   end
 
   def init(:ok) do
-    {:ok, %{clients: [], status: :started}}
+    {:ok, %{clients: %{}, status: :started}}
   end
 
   def handle_call(:subscribe, {pid, _tag}, %{clients: clients} = state) do
-    clients = [pid | clients]
-    Process.monitor(pid)
+    ref = Process.monitor(pid)
+    clients = Map.put(clients, pid, ref)
     {:reply, state.status, %{state | clients: clients}}
   end
 
-  def handle_cast({:set_status, status}, %{clients: []} = state) do
+  def handle_cast({:set_status, status}, %{clients: clients} = state) when clients == %{} do
     {:noreply, %{state | status: status}}
   end
 
   def handle_cast({:set_status, status}, %{clients: clients} = state) do
-    client = Enum.random(clients)
+    client = Enum.random(Map.keys(clients))
     send(client, {:status, status})
     {:noreply, %{state | status: status}}
   end
 
-  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
-    clients = List.delete(state.clients, pid)
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, %{clients: clients} = state) do
+    {ref, clients} = Map.pop(clients, pid)
+    Process.demonitor(ref)
     {:noreply, %{state | clients: clients}}
   end
 end
