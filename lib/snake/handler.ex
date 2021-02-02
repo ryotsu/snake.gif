@@ -7,14 +7,14 @@ defmodule Snake.Handler do
 
   use GenServer
 
-  alias Snake.Encoder.GIF
+  alias Snake.Encoder, as: GIF
   alias Snake.EventHandler
 
   @doc """
   Stars the GenServer
   """
-  @spec start_link :: {:ok, pid}
-  def start_link do
+  @spec start_link(:ok) :: {:ok, pid}
+  def start_link(:ok) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
@@ -85,9 +85,6 @@ defmodule Snake.Handler do
     {:reply, {:error, "Already started"}, state}
   end
 
-  @doc """
-  Subscribes the caller by adding its pid to the list of clients and monitoring it
-  """
   def handle_call(:subscribe, {pid, _tag}, %{clients: clients} = state) do
     ref = Process.monitor(pid)
     clients = Map.put(clients, pid, ref)
@@ -120,9 +117,6 @@ defmodule Snake.Handler do
     {:noreply, state}
   end
 
-  @doc """
-  Unsubscribes the client when the client process dies
-  """
   def handle_info({:DOWN, _ref, :process, pid, _reason}, %{clients: clients} = state) do
     {ref, clients} = Map.pop(clients, pid)
     Process.demonitor(ref)
@@ -144,7 +138,7 @@ defmodule Snake.Handler do
 
   @spec new_game :: {reference, binary}
   defp new_game do
-    {:ok, buffer, image_data} = GIF.new_game()
+    {buffer, image_data} = GIF.new_game()
     frame = make_frame(image_data)
     {buffer, frame}
   end

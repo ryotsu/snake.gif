@@ -3,21 +3,26 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
+
+# General application configuration
 use Mix.Config
 
 # Configures the endpoint
 config :snake, SnakeWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "DlNpChvTIfqh5mQeMvRnsTqZ/1qhE2wQTMkWjfvyw2eJOQZJzYAcZj/I2XjKBQZt",
-  render_errors: [view: SnakeWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Snake.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  secret_key_base: "2eWOQscrDQsQlglwJapF3mrRAz99lrn6FOC9A+hGGwI71GZOcccnecw6t7xWoJs8",
+  render_errors: [view: SnakeWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: Snake.PubSub,
+  live_view: [signing_salt: "nyXnfb/I"]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

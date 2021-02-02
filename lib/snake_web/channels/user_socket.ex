@@ -2,12 +2,7 @@ defmodule SnakeWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", SnakeWeb.RoomChannel
-  channel("snake", SnakeWeb.SnakeChannel)
-
-  ## Transports
-  transport(:websocket, Phoenix.Transports.WebSocket)
-  # transport :longpoll, Phoenix.Transports.LongPoll
+  channel "snake", SnakeWeb.SnakeChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -20,7 +15,8 @@ defmodule SnakeWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(%{"user_id" => user_id}, socket) do
+  @impl true
+  def connect(%{"user_id" => user_id}, socket, _connect_info) do
     {:ok, assign(socket, :user_id, user_id)}
   end
 
@@ -34,5 +30,6 @@ defmodule SnakeWeb.UserSocket do
   #     SnakeWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
+  @impl true
   def id(_socket), do: nil
 end

@@ -10,31 +10,21 @@ defmodule SnakeWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      content_tag(:span, translate_error(error), class: "help-block")
+      content_tag(:span, translate_error(error),
+        class: "invalid-feedback",
+        phx_feedback_for: input_id(form, field)
+      )
     end)
   end
 
   @doc """
-  Translates an error message using gettext.
+  Translates an error message.
   """
   def translate_error({msg, opts}) do
-    # Because error messages were defined within Ecto, we must
-    # call the Gettext module passing our Gettext backend. We
-    # also use the "errors" domain as translations are placed
-    # in the errors.po file.
-    # Ecto will pass the :count keyword if the error message is
-    # meant to be pluralized.
-    # On your own code and templates, depending on whether you
-    # need the message to be pluralized or not, this could be
-    # written simply as:
-    #
-    #     dngettext "errors", "1 file", "%{count} files", count
-    #     dgettext "errors", "is invalid"
-    #
-    if count = opts[:count] do
-      Gettext.dngettext(SnakeWeb.Gettext, "errors", msg, msg, count, opts)
-    else
-      Gettext.dgettext(SnakeWeb.Gettext, "errors", msg, opts)
-    end
+    # Because the error messages we show in our forms and APIs
+    # are defined inside Ecto, we need to translate them dynamically.
+    Enum.reduce(opts, msg, fn {key, value}, acc ->
+      String.replace(acc, "%{#{key}}", to_string(value))
+    end)
   end
 end

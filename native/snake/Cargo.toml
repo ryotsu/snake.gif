@@ -1,0 +1,15 @@
+[package]
+name = "snake"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[lib]
+name = "snake"
+path = "src/lib.rs"
+crate-type = ["dylib"]
+
+[dependencies]
+rustler = "0.22.0-rc.0"
+lzw = "0.10.0"
+rand = "0.8.3"

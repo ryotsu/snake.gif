@@ -1,0 +1,11 @@
+<div class="container">
+  <script>window.user_id = "<%= assigns[:user_id] %>"</script>
+
+  <div class="box">
+    <img id="snake" src="<%= Routes.page_path(@conn, :gif) %>" />  
+  </div>
+
+  <div class="box">
+    <button id="startButton" class="pure-button pure-button-primary"> Start Game </button>
+  </div>
+</div>

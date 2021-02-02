@@ -1,26 +1,17 @@
-defmodule Snake.Mixfile do
+defmodule Snake.MixProject do
   use Mix.Project
 
   def project do
     [
       app: :snake,
-      version: "0.0.1",
-      elixir: "~> 1.4",
+      version: "0.1.0",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:rustler, :phoenix, :gettext] ++ Mix.compilers(),
-      rustler_crates: rustler_crates(),
-      dialyzer: [plt_add_deps: :transitive],
+      compilers: [:rustler, :phoenix] ++ Mix.compilers(),
+      rustler_crates: [snake: []],
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps()
-    ]
-  end
-
-  defp rustler_crates do
-    [
-      snake_gif: [
-        path: "native/snake_gif",
-        mode: if(Mix.env() == :prod, do: :release, else: :debug)
-      ]
     ]
   end
 
@@ -43,14 +34,26 @@ defmodule Snake.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.3.0"},
-      {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_html, "~> 2.10"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"},
-      {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:rustler, "~> 0.10"}
+      {:phoenix, "~> 1.5.7"},
+      {:phoenix_html, "~> 2.11"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"},
+      {:jason, "~> 1.0"},
+      {:plug_cowboy, "~> 2.0"},
+      {:rustler, "~> 0.22.0-rc.0"}
+    ]
+  end
+
+  # Aliases are shortcuts or tasks specific to the current project.
+  # For example, to install project dependencies and perform other setup tasks, run:
+  #
+  #     $ mix setup
+  #
+  # See the documentation for `Mix` for more info on aliases.
+  defp aliases do
+    [
+      setup: ["deps.get", "cmd npm install --prefix assets"]
     ]
   end
 end

@@ -1,19 +1,22 @@
 defmodule Snake.Application do
-  use Application
-
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
-  def start(_type, _args) do
-    import Supervisor.Spec
+  @moduledoc false
 
-    # Define workers and child supervisors to be supervised
+  use Application
+
+  def start(_type, _args) do
     children = [
-      # Start the endpoint when the application starts
-      supervisor(SnakeWeb.Endpoint, []),
-      # Start your own worker by calling: Snake.Worker.start_link(arg1, arg2, arg3)
-      # worker(Snake.Worker, [arg1, arg2, arg3]),
-      worker(Snake.EventHandler, []),
-      worker(Snake.Handler, [])
+      # Start the Telemetry supervisor
+      SnakeWeb.Telemetry,
+      # Start the PubSub system
+      {Phoenix.PubSub, name: Snake.PubSub},
+      # Start the Endpoint (http/https)
+      SnakeWeb.Endpoint,
+      # Start a worker by calling: Snake.Worker.start_link(arg)
+      # {Snake.Worker, arg}
+      {Snake.EventHandler, :ok},
+      {Snake.Handler, :ok}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
