@@ -8,4 +8,12 @@
   <div class="box">
     <button id="startButton" class="pure-button pure-button-primary"> Start Game </button>
   </div>
+
+  <div class="touch-buttons">
+    <div id="up" class="button up-button"></div>
+    <div id="right" class="button right-button"></div>
+    <div id="down" class="button down-button"></div>
+    <div id="left" class="button left-button"></div>
+    <div class="cutout"></div>
+  </div>
 </div>

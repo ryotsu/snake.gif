@@ -15,6 +15,17 @@ let initSnake = (socket) => {
   document
     .getElementById("startButton")
     .addEventListener("click", (_evt) => handleStart(channel))
+
+  let buttons = document.getElementsByClassName("button")
+  for (let i = 0; i < 4; i++) {
+    buttons[i].addEventListener("click", () => {
+      if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
+        channel
+          .push("new_direction", { direction: buttons[i].id })
+          .receive("error", e => console.log(e))
+      }
+    })
+  }
 }
 
 let handleStart = (channel) => {
@@ -45,9 +56,11 @@ let handleKeys = (event, channel) => {
   let keycode = event.keyCode || event.which
   let direction = matchKey(keycode)
 
-  channel
-    .push("new_direction", { direction: direction })
-    .receive("error", e => console.log(e))
+  if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
+    channel
+      .push("new_direction", { direction: direction })
+      .receive("error", e => console.log(e))
+  }
 };
 
 let matchKey = (keycode) => {
