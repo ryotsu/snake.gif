@@ -63,7 +63,8 @@ defmodule Snake.Handler do
        clients: %{},
        buffer: buffer,
        status: :initialized,
-       player_id: nil
+       player_id: nil,
+       direction: {nil, nil},
      }}
   end
 
@@ -94,10 +95,14 @@ defmodule Snake.Handler do
   @doc """
   Turns the snake in the given direction if the player ids match
   """
-  def handle_cast({:turn, player_id, direction}, %{player_id: player_id} = state) do
-    GIF.turn(state.buffer, direction)
-    {:noreply, state}
+  def handle_cast({:turn, player_id, direction}, %{player_id: player_id, direction: {nil, nil}} = state) do
+    {:noreply, %{state | direction: {direction, nil}}}
   end
+
+  def handle_cast({:turn, player_id, direction}, %{player_id: player_id, direction: {queued_dir, nil}} = state) do
+    {:noreply, %{state | direction: {queued_dir, direction}}}
+  end
+
 
   def handle_cast({:turn, _, _}, state) do
     {:noreply, state}
@@ -106,10 +111,11 @@ defmodule Snake.Handler do
   @doc """
   Gets the next frame of the gif image from the nif and sends it to all the clients.
   """
-  def handle_info(:next_frame, %{status: :started, clients: clients} = state) do
+  def handle_info(:next_frame, %{status: :started, clients: clients, direction: {first, second}} = state) do
+    if first != nil, do: GIF.turn(state.buffer, first)
     {status, frame} = get_next_frame(state.buffer, state.frame)
     set_timer_and_send(clients, frame)
-    {:noreply, %{state | frame: frame, status: status}}
+    {:noreply, %{state | frame: frame, status: status, direction: {second, nil}}}
   end
 
   def handle_info(:next_frame, %{frame: frame, clients: clients} = state) do
