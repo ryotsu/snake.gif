@@ -5,8 +5,6 @@ defmodule Snake.Encoder do
 
   use Rustler, otp_app: :snake, crate: :snake
 
-  @dialyzer {:nowarn_function, __init__: 0}
-
   @spec new_game() :: {reference, binary}
   def new_game(), do: err()
 
