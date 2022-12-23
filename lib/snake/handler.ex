@@ -44,9 +44,7 @@ defmodule Snake.Handler do
 
   #################################### Callbacks ####################################
 
-  @doc """
-  Initializes the GenServer with GIF base headers and starts the new_game
-  """
+  @impl true
   def init(:ok) do
     base =
       "GIF89a" <>
@@ -65,59 +63,76 @@ defmodule Snake.Handler do
        status: :initialized,
        player_id: nil,
        direction: {nil, nil},
+       high_score: 0,
+       score: 0
      }}
   end
 
-  @doc """
-  Starts the game if no game is running. Returns an error otherwise
-  """
+  @impl true
   def handle_call({:start, player_id}, _from, %{status: :initialized} = state) do
     EventHandler.set_status(:started)
     {:reply, :ok, %{state | status: :started, player_id: player_id}}
   end
 
+  @impl true
   def handle_call({:start, player_id}, _from, %{status: :stopped} = state) do
     {buffer, frame} = new_game()
     EventHandler.set_status(:started)
     {:reply, :ok, %{state | buffer: buffer, frame: frame, status: :started, player_id: player_id}}
   end
 
+  @impl true
   def handle_call({:start, _}, _from, %{status: :started} = state) do
     {:reply, {:error, "Already started"}, state}
   end
 
+  @impl true
   def handle_call(:subscribe, {pid, _tag}, %{clients: clients} = state) do
     ref = Process.monitor(pid)
     clients = Map.put(clients, pid, ref)
     {:reply, state.base <> state.frame, %{state | clients: clients}}
   end
 
-  @doc """
-  Turns the snake in the given direction if the player ids match
-  """
-  def handle_cast({:turn, player_id, direction}, %{player_id: player_id, direction: {nil, nil}} = state) do
+  @impl true
+  def handle_cast(
+        {:turn, player_id, direction},
+        %{player_id: player_id, direction: {nil, nil}} = state
+      ) do
     {:noreply, %{state | direction: {direction, nil}}}
   end
 
-  def handle_cast({:turn, player_id, direction}, %{player_id: player_id, direction: {queued_dir, nil}} = state) do
+  @impl true
+  def handle_cast(
+        {:turn, player_id, direction},
+        %{player_id: player_id, direction: {queued_dir, nil}} = state
+      ) do
     {:noreply, %{state | direction: {queued_dir, direction}}}
   end
 
-
+  @impl true
   def handle_cast({:turn, _, _}, state) do
     {:noreply, state}
   end
 
-  @doc """
-  Gets the next frame of the gif image from the nif and sends it to all the clients.
-  """
-  def handle_info(:next_frame, %{status: :started, clients: clients, direction: {first, second}} = state) do
+  @impl true
+  def handle_info(
+        :next_frame,
+        %{status: :started, clients: clients, direction: {first, second}} = state
+      ) do
     if first != nil, do: GIF.turn(state.buffer, first)
-    {status, frame} = get_next_frame(state.buffer, state.frame)
+    {status, frame, score} = get_next_frame(state.buffer, state.frame)
     set_timer_and_send(clients, frame)
+
+    high_score = max(state.high_score, score)
+    if score != state.score, do: EventHandler.update_score({score, state.high_score})
+
+    score = if status == :stopped, do: 0, else: max(state.score, score)
+
+    state = %{state | score: score, high_score: high_score}
     {:noreply, %{state | frame: frame, status: status, direction: {second, nil}}}
   end
 
+  @impl true
   def handle_info(:next_frame, %{frame: frame, clients: clients} = state) do
     set_timer_and_send(clients, frame)
     {:noreply, state}
@@ -129,16 +144,16 @@ defmodule Snake.Handler do
     {:noreply, %{state | clients: clients}}
   end
 
-  @spec get_next_frame(reference, binary) :: {:started, binary} | {:stopped, binary}
+  @spec get_next_frame(reference, binary) :: {:started | :stopped, binary, integer}
   defp get_next_frame(buffer, frame) do
     case GIF.next_frame(buffer) do
-      {:ok, image_data} ->
+      {:ok, {image_data, score}} ->
         new_frame = make_frame(image_data)
-        {:started, new_frame}
+        {:started, new_frame, score}
 
       {:error, _err} ->
         EventHandler.set_status(:stopped)
-        {:stopped, frame}
+        {:stopped, frame, 0}
     end
   end
 
@@ -154,7 +169,7 @@ defmodule Snake.Handler do
     GIF.graphic_control_ext(1, 10) <> GIF.image_descriptor(128, 128) <> image_data
   end
 
-  @spec set_timer_and_send([pid], binary) :: :ok
+  @spec set_timer_and_send(map, binary) :: :ok
   defp set_timer_and_send(clients, frame) do
     Process.send_after(self(), :next_frame, 100)
 

@@ -20,6 +20,7 @@ pub struct Board {
     snake_set: HashSet<u16>,
     food: (u8, u8),
     direction: Direction,
+    score: u16,
 }
 
 impl Board {
@@ -34,6 +35,7 @@ impl Board {
         }
         let food = Self::food_location(&snake_set);
         let direction = Direction::Left;
+        let score = 0;
 
         Board {
             field,
@@ -41,6 +43,7 @@ impl Board {
             snake_set,
             food,
             direction,
+            score,
         }
     }
 
@@ -103,9 +106,14 @@ impl Board {
                 .remove(&(u16::from(tail.0) * 32 + u16::from(tail.1)));
         } else {
             self.food = Self::food_location(&self.snake_set);
+            self.score += 1;
         }
 
         Ok(self.current_frame())
+    }
+
+    pub fn get_score(&self) -> u16 {
+        self.score
     }
 
     // Sets the colour of each pixel in the snake to  white and the food red

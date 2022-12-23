@@ -8,7 +8,7 @@ defmodule Snake.Encoder do
   @spec new_game() :: {reference, binary}
   def new_game(), do: err()
 
-  @spec next_frame(reference) :: {:ok, binary} | {:error, binary}
+  @spec next_frame(reference) :: {:ok, {binary, integer}} | {:error, binary}
   def next_frame(_buffer), do: err()
 
   @spec turn(reference, :up | :down | :left | :right) :: :ok

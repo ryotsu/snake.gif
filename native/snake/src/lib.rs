@@ -48,14 +48,17 @@ fn new_game(env: Env) -> (ResourceArc<Buffer>, Binary) {
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-fn next_frame(env: Env, buffer: ResourceArc<Buffer>) -> Result<Binary, String> {
+fn next_frame(env: Env, buffer: ResourceArc<Buffer>) -> Result<(Binary, u16), String> {
     let result = buffer.board.write().unwrap().next_frame();
     match result {
         Ok(image) => {
             let mut binary = OwnedBinary::new(image.len()).unwrap();
             binary.as_mut_slice().clone_from_slice(&image);
 
-            Ok(binary.release(env))
+            Ok((
+                binary.release(env),
+                buffer.board.read().unwrap().get_score(),
+            ))
         }
         Err(err) => Err(err.into()),
     }

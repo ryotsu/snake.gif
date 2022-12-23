@@ -4,11 +4,16 @@ let initSnake = (socket) => {
   channel.join()
     .receive("ok", resp => {
       toggleButton(resp.status)
+      updateScore(resp)
     })
     .receive("error", resp => { console.log("Unable to join", resp) })
 
   channel.on("new_status", (resp) => {
     toggleButton(resp.status)
+  })
+
+  channel.on("update_score", (resp) => {
+    updateScore(resp)
   })
 
   document.addEventListener("keydown", (evt) => handleKeys(evt, channel), false)
@@ -26,6 +31,11 @@ let initSnake = (socket) => {
       }
     })
   }
+}
+
+let updateScore = (scores) => {
+  document.getElementById("score").textContent = scores["score"]
+  document.getElementById("highScore").textContent = scores["high_score"]
 }
 
 let handleStart = (channel) => {

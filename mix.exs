@@ -4,8 +4,8 @@ defmodule Snake.MixProject do
   def project do
     [
       app: :snake,
-      version: "0.1.0",
-      elixir: "~> 1.12",
+      version: "1.0.0",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -43,7 +43,9 @@ defmodule Snake.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:rustler, "~> 0.22.2"}
+      {:rustler, "~> 0.22.2"},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
   end
 
