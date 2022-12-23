@@ -4,7 +4,7 @@ use rand::seq::SliceRandom;
 use std::collections::{HashSet, VecDeque};
 
 #[repr(u8)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum Direction {
     Up,
     Down,
@@ -60,8 +60,8 @@ impl Board {
             _ => Right,
         };
 
-        let (y1, x1) = COORDS[self.direction.clone() as usize];
-        let (y2, x2) = COORDS[new_dir.clone() as usize];
+        let (y1, x1) = COORDS[self.direction as usize];
+        let (y2, x2) = COORDS[new_dir as usize];
 
         if (y1 + y2, x1 + x2) != (0, 0) {
             self.direction = new_dir;
@@ -80,7 +80,7 @@ impl Board {
     pub fn next_frame(&mut self) -> Result<Vec<u8>, &'static str> {
         let mouth = {
             let &(y, x) = self.snake.front().unwrap();
-            let (dy, dx) = COORDS[self.direction.clone() as usize];
+            let (dy, dx) = COORDS[self.direction as usize];
             ((y as i8 + dy) as u8, (x as i8 + dx) as u8)
         };
 
