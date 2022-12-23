@@ -15,9 +15,7 @@ defmodule SnakeWeb.PageController do
     conn =
       conn
       |> put_resp_content_type("image/gif")
-      |> put_resp_header("Cache-Control", "no-cache")
-      |> put_resp_header("Cache-Control", "no-store")
-      |> put_resp_header("Cache-Control", "no-transform")
+      |> put_resp_header("Cache-Control", "no-cache, no-store, no-transform")
       |> send_chunked(200)
 
     data = Handler.subscribe()
