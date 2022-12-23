@@ -88,7 +88,7 @@ impl Board {
             return Err("Game Over");
         }
 
-        let mouth_idx = u16::from(mouth.0) * 32 + u16::from(mouth.1);
+        let mouth_idx = mouth.0 as u16 * 32 + mouth.1 as u16;
         if self.snake_set.contains(&mouth_idx) {
             return Err("Game Over");
         }
@@ -108,6 +108,7 @@ impl Board {
         Ok(self.current_frame())
     }
 
+    // Sets the colour of each pixel in the snake to  white and the food red
     fn paint(&mut self) {
         for pixel in &self.snake {
             Self::paint_pixel(&mut self.field, pixel, 1);
@@ -116,6 +117,7 @@ impl Board {
         Self::paint_pixel(&mut self.field, &self.food, 2);
     }
 
+    // Paints each element in the field to 4 pixel wide and 4 pixels long
     fn paint_pixel(field: &mut [Vec<u8>], &(x, y): &(u8, u8), value: u8) {
         for i in 0..4 {
             for j in 0..4 {
@@ -124,6 +126,7 @@ impl Board {
         }
     }
 
+    // Sets the food at a unoccupied position
     fn food_location(snake: &HashSet<u16>) -> (u8, u8) {
         let blanks: Vec<u16> = (0..1024).filter(|i| !snake.contains(i)).collect();
         let mut rng = thread_rng();

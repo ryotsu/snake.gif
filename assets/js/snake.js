@@ -54,6 +54,12 @@ let key = {
 
 let handleKeys = (event, channel) => {
   let keycode = event.keyCode || event.which
+
+  // Start the game on spacebar
+  if (keycode == 32) {
+    handleStart(channel)
+  }
+
   let direction = matchKey(keycode)
 
   if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
