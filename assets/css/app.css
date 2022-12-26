@@ -119,17 +119,15 @@ html, body {
   border-radius: 5px;
 }
 
-@media (any-hover: none) {
-  .touch-buttons {
-    position: relative;
-    top: 30px;
-    width: 150px;
-    height: 150px;
-    transform: rotate(45deg);
-  }
+.touch-buttons {
+  position: relative;
+  top: 100px;
+  width: 150px;
+  height: 150px;
+  transform: rotate(45deg);
 }
 
-@media (any-hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .touch-buttons {
     display: none;
   }
@@ -139,19 +137,19 @@ html, body {
   position: absolute;
   width: 50%;
   height: 50%;
-  background-color: orange;
+  background-color: #E76F00;
   transition: background-color 0.2s ease-in-out;
 }
 
 .button:hover {
-  background-color: pink;
+  background-color: #ff891b;
 }
 
 .up-button {
   top: 0;
   left: 0;
-  background-color: red;
   border-radius: 100% 0 0 0;
+  border-color: ;
 }
 
 .right-button {
@@ -169,7 +167,6 @@ html, body {
 .down-button {
   bottom: 0;
   right: 0;
-  background-color: red;
   border-radius: 0 0 100% 0;
 }
 
