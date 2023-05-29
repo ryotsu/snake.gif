@@ -18,7 +18,6 @@ defmodule Snake.EventHandler do
   end
 
   def update_score({score, high_score}) do
-    high_score = max(score, high_score)
     GenServer.cast(__MODULE__, {:update_score, score, high_score})
   end
 

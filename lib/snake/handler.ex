@@ -77,7 +77,9 @@ defmodule Snake.Handler do
   @impl true
   def handle_call({:start, player_id}, _from, %{status: :stopped} = state) do
     {buffer, frame} = new_game()
+    state = %{state | score: 0}
     EventHandler.set_status(:started)
+    EventHandler.update_score({state.score, state.high_score})
     {:reply, :ok, %{state | buffer: buffer, frame: frame, status: :started, player_id: player_id}}
   end
 
@@ -115,18 +117,16 @@ defmodule Snake.Handler do
   end
 
   @impl true
-  def handle_info(
-        :next_frame,
-        %{status: :started, clients: clients, direction: {first, second}} = state
-      ) do
+  def handle_info(:next_frame, %{status: :started, direction: {first, second}} = state) do
+    clients = Map.get(state, :clients)
+
     if first != nil, do: GIF.turn(state.buffer, first)
     {status, frame, score} = get_next_frame(state.buffer, state.frame)
     set_timer_and_send(clients, frame)
 
+    score = max(state.score, score)
     high_score = max(state.high_score, score)
-    if score != state.score, do: EventHandler.update_score({score, state.high_score})
-
-    score = if status == :stopped, do: 0, else: max(state.score, score)
+    if score != state.score, do: EventHandler.update_score({score, high_score})
 
     state = %{state | score: score, high_score: high_score}
     {:noreply, %{state | frame: frame, status: status, direction: {second, nil}}}
