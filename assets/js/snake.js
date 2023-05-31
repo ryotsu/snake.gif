@@ -21,16 +21,16 @@ let initSnake = (socket) => {
     .getElementById("startButton")
     .addEventListener("click", (_evt) => handleStart(channel))
 
-  let buttons = document.getElementsByClassName("button")
-  for (let i = 0; i < 4; i++) {
-    buttons[i].addEventListener("click", () => {
-      if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
-        channel
-          .push("new_direction", { direction: buttons[i].id })
-          .receive("error", e => console.log(e))
-      }
-    })
-  }
+  // let buttons = document.getElementsByClassName("button")
+  // for (let i = 0; i < 4; i++) {
+  //   buttons[i].addEventListener("click", () => {
+  //     if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
+  //       channel
+  //         .push("new_direction", { direction: buttons[i].id })
+  //         .receive("error", e => console.log(e))
+  //     }
+  //   })
+  // }
 }
 
 let updateScore = (scores) => {
@@ -49,9 +49,13 @@ let handleStart = (channel) => {
 
 let toggleButton = (status) => {
   if (status == "stopped") {
-    document.getElementById("startButton").classList.remove("pure-button-disabled")
+    let elem = document.getElementById("startButton")
+    elem.classList.remove("cursor-not-allowed", "opacity-50")
+    elem.classList.add("hover:bg-blue-700")
   } else {
-    document.getElementById("startButton").classList.add("pure-button-disabled")
+    let elem = document.getElementById("startButton")
+    elem.classList.add("cursor-not-allowed", "opacity-50")
+    elem.classList.remove("hover:bg-blue-700")
   }
 }
 
@@ -72,7 +76,7 @@ let handleKeys = (event, channel) => {
 
   let direction = matchKey(keycode)
 
-  if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
+  if (!document.getElementById("startButton").classList.contains("curson-not-allowed")) {
     channel
       .push("new_direction", { direction: direction })
       .receive("error", e => console.log(e))

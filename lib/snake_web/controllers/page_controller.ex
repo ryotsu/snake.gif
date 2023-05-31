@@ -3,12 +3,16 @@ defmodule SnakeWeb.PageController do
 
   alias Snake.Handler
 
-  def index(conn, _params) do
-    user_id = :crypto.strong_rand_bytes(16) |> Base.encode64()
+  def home(conn, _params) do
+    {status, score, high_score} = {:stopped, 0, 0}
+    user_token = :crypto.strong_rand_bytes(32) |> Base.encode64()
 
     conn
-    |> assign(:user_id, user_id)
-    |> render("index.html")
+    |> assign(:user_token, user_token)
+    |> assign(:status, status)
+    |> assign(:score, score)
+    |> assign(:high_score, high_score)
+    |> render(:home)
   end
 
   def gif(conn, _params) do

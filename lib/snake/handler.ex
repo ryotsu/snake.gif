@@ -70,21 +70,21 @@ defmodule Snake.Handler do
 
   @impl true
   def handle_call({:start, player_id}, _from, %{status: :initialized} = state) do
-    EventHandler.set_status(:started)
-    {:reply, :ok, %{state | status: :started, player_id: player_id}}
+    EventHandler.set_status(:running)
+    {:reply, :ok, %{state | status: :running, player_id: player_id}}
   end
 
   @impl true
   def handle_call({:start, player_id}, _from, %{status: :stopped} = state) do
     {buffer, frame} = new_game()
     state = %{state | score: 0}
-    EventHandler.set_status(:started)
+    EventHandler.set_status(:running)
     EventHandler.update_score({state.score, state.high_score})
-    {:reply, :ok, %{state | buffer: buffer, frame: frame, status: :started, player_id: player_id}}
+    {:reply, :ok, %{state | buffer: buffer, frame: frame, status: :running, player_id: player_id}}
   end
 
   @impl true
-  def handle_call({:start, _}, _from, %{status: :started} = state) do
+  def handle_call({:start, _}, _from, %{status: :running} = state) do
     {:reply, {:error, "Already started"}, state}
   end
 
@@ -117,7 +117,7 @@ defmodule Snake.Handler do
   end
 
   @impl true
-  def handle_info(:next_frame, %{status: :started, direction: {first, second}} = state) do
+  def handle_info(:next_frame, %{status: :running, direction: {first, second}} = state) do
     clients = Map.get(state, :clients)
 
     if first != nil, do: GIF.turn(state.buffer, first)
@@ -144,12 +144,12 @@ defmodule Snake.Handler do
     {:noreply, %{state | clients: clients}}
   end
 
-  @spec get_next_frame(reference, binary) :: {:started | :stopped, binary, integer}
+  @spec get_next_frame(reference, binary) :: {:running | :stopped, binary, integer}
   defp get_next_frame(buffer, frame) do
     case GIF.next_frame(buffer) do
       {:ok, {image_data, score}} ->
         new_frame = make_frame(image_data)
-        {:started, new_frame, score}
+        {:running, new_frame, score}
 
       {:error, _err} ->
         EventHandler.set_status(:stopped)

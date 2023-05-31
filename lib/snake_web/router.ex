@@ -5,7 +5,7 @@ defmodule SnakeWeb.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {SnakeWeb.LayoutView, :root}
+    plug :put_root_layout, {SnakeWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -17,7 +17,7 @@ defmodule SnakeWeb.Router do
   scope "/", SnakeWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", PageController, :home
     get "/snake.gif", PageController, :gif
   end
 

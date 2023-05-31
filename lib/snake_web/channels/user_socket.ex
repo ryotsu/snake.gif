@@ -7,20 +7,17 @@ defmodule SnakeWeb.UserSocket do
   # assign values that can be accessed by your channel topics.
 
   ## Channels
-  channel "snake", SnakeWeb.SnakeChannel
-
   # Uncomment the following line to define a "room:*" topic
   # pointing to the `SnakeWeb.RoomChannel`:
   #
-  # channel "room:*", SnakeWeb.RoomChannel
+  channel "snake", SnakeWeb.SnakeChannel
   #
   # To create a channel file, use the mix task:
   #
   #     mix phx.gen.channel Room
   #
   # See the [`Channels guide`](https://hexdocs.pm/phoenix/channels.html)
-  # for futher details.
-
+  # for further details.
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -29,13 +26,16 @@ defmodule SnakeWeb.UserSocket do
   #
   #     {:ok, assign(socket, :user_id, verified_user_id)}
   #
-  # To deny connection, return `:error`.
+  # To deny connection, return `:error` or `{:error, term}`. To control the
+  # response the client receives in that case, [define an error handler in the
+  # websocket
+  # configuration](https://hexdocs.pm/phoenix/Phoenix.Endpoint.html#socket/3-websocket-configuration).
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(%{"user_id" => user_id}, socket, _connect_info) do
-    {:ok, assign(socket, :user_id, user_id)}
+  def connect(%{"token" => token}, socket, _connect_info) do
+    {:ok, assign(socket, :token, token)}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

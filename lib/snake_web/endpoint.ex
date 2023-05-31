@@ -7,7 +7,8 @@ defmodule SnakeWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_snake_key",
-    signing_salt: "bjDtYfy5"
+    signing_salt: "IE65mqvW",
+    same_site: "Lax"
   ]
 
   socket "/socket", SnakeWeb.UserSocket,
@@ -24,7 +25,7 @@ defmodule SnakeWeb.Endpoint do
     at: "/",
     from: :snake,
     gzip: false,
-    only: ~w(assets fonts images favicon.ico robots.txt)
+    only: SnakeWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

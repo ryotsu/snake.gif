@@ -23,7 +23,7 @@ defmodule Snake.EventHandler do
 
   @impl true
   def init(:ok) do
-    {:ok, %{clients: %{}, status: :started, score: 0, high_score: 0}}
+    {:ok, %{clients: %{}, status: :running, score: 0, high_score: 0}}
   end
 
   @impl true

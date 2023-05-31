@@ -2,7 +2,8 @@ defmodule SnakeWeb.SnakeChannel do
   @moduledoc """
   Main snake channel for handling updates with the page.
   """
-  use SnakeWeb, :channel
+
+  use Phoenix.Channel
 
   alias Snake.EventHandler
   alias Snake.Handler
@@ -19,7 +20,7 @@ defmodule SnakeWeb.SnakeChannel do
   def handle_in("new_direction", %{"direction" => direction}, socket) do
     case Map.fetch(@directions, direction) do
       {:ok, direction} ->
-        Handler.turn(socket.assigns.user_id, direction)
+        Handler.turn(socket.assigns.token, direction)
         {:reply, :ok, socket}
 
       :error ->
@@ -29,8 +30,8 @@ defmodule SnakeWeb.SnakeChannel do
 
   @impl true
   def handle_in("start", _params, socket) do
-    Handler.start_game(socket.assigns.user_id)
-    {:reply, {:ok, %{status: :started}}, socket}
+    Handler.start_game(socket.assigns.token)
+    {:reply, {:ok, %{status: :running}}, socket}
   end
 
   @impl true
