@@ -7,8 +7,9 @@ defmodule Snake.Handler do
 
   use GenServer
 
+  alias Phoenix.PubSub
+
   alias Snake.Encoder, as: GIF
-  alias Snake.EventHandler
 
   @doc """
   Stars the GenServer
@@ -16,6 +17,14 @@ defmodule Snake.Handler do
   @spec start_link(:ok) :: {:ok, pid}
   def start_link(:ok) do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+  end
+
+  @doc """
+  Get the current status and scores
+  """
+  @spec get_info :: {:stopped | :running, integer(), integer()}
+  def get_info do
+    GenServer.call(__MODULE__, :get_info)
   end
 
   @doc """
@@ -51,7 +60,8 @@ defmodule Snake.Handler do
         GIF.screen_descriptor(128, 128, 1) <> GIF.color_table() <> GIF.application_extension(1)
 
     {buffer, frame} = new_game()
-    EventHandler.set_status(:stopped)
+    PubSub.broadcast(Snake.PubSub, "snake_updates", {:status, :stopped})
+
     Process.send_after(self(), :next_frame, 100)
 
     {:ok,
@@ -60,7 +70,7 @@ defmodule Snake.Handler do
        frame: frame,
        clients: %{},
        buffer: buffer,
-       status: :initialized,
+       status: :stopped,
        player_id: nil,
        direction: {nil, nil},
        high_score: 0,
@@ -69,17 +79,18 @@ defmodule Snake.Handler do
   end
 
   @impl true
-  def handle_call({:start, player_id}, _from, %{status: :initialized} = state) do
-    EventHandler.set_status(:running)
-    {:reply, :ok, %{state | status: :running, player_id: player_id}}
+  def handle_call(:get_info, _from, state) do
+    {:reply, {state.status, state.score, state.high_score}, state}
   end
 
   @impl true
   def handle_call({:start, player_id}, _from, %{status: :stopped} = state) do
     {buffer, frame} = new_game()
     state = %{state | score: 0}
-    EventHandler.set_status(:running)
-    EventHandler.update_score({state.score, state.high_score})
+
+    PubSub.broadcast(Snake.PubSub, "snake_updates", {:status, :running})
+    PubSub.broadcast(Snake.PubSub, "snake_updates", {:scores, state.score, state.high_score})
+
     {:reply, :ok, %{state | buffer: buffer, frame: frame, status: :running, player_id: player_id}}
   end
 
@@ -126,7 +137,10 @@ defmodule Snake.Handler do
 
     score = max(state.score, score)
     high_score = max(state.high_score, score)
-    if score != state.score, do: EventHandler.update_score({score, high_score})
+
+    if score != state.score do
+      PubSub.broadcast(Snake.PubSub, "snake_updates", {:scores, score, high_score})
+    end
 
     state = %{state | score: score, high_score: high_score}
     {:noreply, %{state | frame: frame, status: status, direction: {second, nil}}}
@@ -152,7 +166,7 @@ defmodule Snake.Handler do
         {:running, new_frame, score}
 
       {:error, _err} ->
-        EventHandler.set_status(:stopped)
+        PubSub.broadcast(Snake.PubSub, "snake_updates", {:status, :stopped})
         {:stopped, frame, 0}
     end
   end

@@ -16,8 +16,7 @@ defmodule Snake.Application do
       SnakeWeb.Endpoint,
       # Start a worker by calling: Snake.Worker.start_link(arg)
       # {Snake.Worker, arg}
-      {Snake.Handler, :ok},
-      {Snake.EventHandler, :ok}
+      {Snake.Handler, :ok}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

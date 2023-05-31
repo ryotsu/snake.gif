@@ -21,16 +21,16 @@ let initSnake = (socket) => {
     .getElementById("startButton")
     .addEventListener("click", (_evt) => handleStart(channel))
 
-  // let buttons = document.getElementsByClassName("button")
-  // for (let i = 0; i < 4; i++) {
-  //   buttons[i].addEventListener("click", () => {
-  //     if (document.getElementById("startButton").classList.contains("pure-button-disabled")) {
-  //       channel
-  //         .push("new_direction", { direction: buttons[i].id })
-  //         .receive("error", e => console.log(e))
-  //     }
-  //   })
-  // }
+  let buttons = document.getElementsByClassName("button")
+  for (let i = 0; i < 4; i++) {
+    buttons[i].addEventListener("click", () => {
+      if (document.getElementById("startButton").classList.contains("cursor-not-allowed")) {
+        channel
+          .push("new_direction", { direction: buttons[i].id })
+          .receive("error", e => console.log(e))
+      }
+    })
+  }
 }
 
 let updateScore = (scores) => {

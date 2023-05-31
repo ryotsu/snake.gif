@@ -1,10 +1,8 @@
 defmodule SnakeWeb.PageController do
   use SnakeWeb, :controller
 
-  alias Snake.Handler
-
   def home(conn, _params) do
-    {status, score, high_score} = {:stopped, 0, 0}
+    {status, score, high_score} = Snake.Handler.get_info()
     user_token = :crypto.strong_rand_bytes(32) |> Base.encode64()
 
     conn
@@ -22,7 +20,7 @@ defmodule SnakeWeb.PageController do
       |> put_resp_header("Cache-Control", "no-cache, no-store, no-transform")
       |> send_chunked(200)
 
-    data = Handler.subscribe()
+    data = Snake.Handler.subscribe()
     {:ok, conn} = chunk(conn, data)
     next_frame(conn)
   end
