@@ -14,28 +14,31 @@
   >
     Start Game
   </button>
-  <div class="[@media(pointer:fine)]:[@media(hover:hover)]:hidden relative top-[50px] w-[150px] h-[150px] rotate-45">
-    <div
+
+  <div class="[@media(pointer:fine)]:[@media(hover:hover)]:hidden flex mt-4 relative w-40 h-40 p-4">
+    <button
       id="up"
-      class="button absolute w-1/2 h-1/2 bg-orange-500 hover:bg-orange-600 top-0 left-0 rounded-tl-full"
+      type="button"
+      class="button w-0 h-0 border-l-[25px] border-r-[25px] border-b-[35px] border-solid border-l-transparent border-r-transparent border-b-blue-500  bg-no-repeat bg-contain absolute top-2 left-1/2 -translate-x-1/2"
     >
-    </div>
-    <div
-      id="right"
-      class="button absolute w-1/2 h-1/2 bg-yellow-500 hover:bg-yellow-600 top-0 right-0 rounded-tr-full"
-    >
-    </div>
-    <div
-      id="down"
-      class="button absolute w-1/2 h-1/2 bg-orange-500 hover:bg-orange-600 bottom-0 right-0 rounded-br-full"
-    >
-    </div>
-    <div
+    </button>
+    <button
       id="left"
-      class="button absolute w-1/2 h-1/2 bg-yellow-500 hover:bg-yellow-600 bottom-0 left-0 rounded-bl-full"
+      type="button"
+      class="button w-0 h-0 border-t-[25px] border-b-[25px] border-r-[35px] border-solid border-t-transparent border-b-transparent border-r-blue-500 bg-no-repeat bg-contain absolute left-2 top-1/2 -translate-y-1/2"
     >
-    </div>
-    <div class="w-1/2 h-1/2 bg-white absolute top-1/4 left-1/4 rounded-[50%] pointer-events-none">
-    </div>
+    </button>
+    <button
+      id="down"
+      type="button"
+      class="button w-0 h-0 border-l-[25px] border-r-[25px] border-t-[35px] border-solid border-l-transparent border-r-transparent border-t-blue-500 bg-no-repeat bg-contain absolute bottom-2 left-1/2 -translate-x-1/2"
+    >
+    </button>
+    <button
+      id="right"
+      type="button"
+      class="button w-0 h-0 border-t-[25px] border-b-[25px] border-l-[35px] border-solid border-t-transparent border-b-transparent border-l-blue-500 bg-no-repeat bg-contain absolute right-2 top-1/2 -translate-y-1/2"
+    >
+    </button>
   </div>
 </div>

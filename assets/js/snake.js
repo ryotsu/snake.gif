@@ -22,7 +22,7 @@ let initSnake = (socket) => {
     .addEventListener("click", (_evt) => handleStart(channel))
 
   let buttons = document.getElementsByClassName("button")
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener("click", () => {
       if (document.getElementById("startButton").classList.contains("cursor-not-allowed")) {
         channel
@@ -76,7 +76,7 @@ let handleKeys = (event, channel) => {
 
   let direction = matchKey(keycode)
 
-  if (!document.getElementById("startButton").classList.contains("curson-not-allowed")) {
+  if (document.getElementById("startButton").classList.contains("cursor-not-allowed")) {
     channel
       .push("new_direction", { direction: direction })
       .receive("error", e => console.log(e))
