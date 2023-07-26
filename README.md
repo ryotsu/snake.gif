@@ -1,6 +1,6 @@
 # Snake
 
-![Snake](https://gif.kochika.me/snake.gif)
+![Snake](./snake.gif)
 
 To start your Phoenix server:
 
@@ -11,6 +11,6 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ---
 
-You can play it [here](https://gif.kochika.me).
+You can play it [here](https://gif.kochika.me/snake).
 
-Only one person can play it at a time. If the 'Start Game' button is enabled, start the game with space bar or the button and control the snake with the arrow keys.
+Only one person can play at a time. If the 'Start Game' button is enabled, you can start the game and control the snake with the arrow keys.
